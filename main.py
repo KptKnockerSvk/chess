@@ -12,12 +12,10 @@ def creation_of_field():
             # A0  B1  C2  D3  E4  F5  G6  H7
         
    
-    pawns = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
-    for i in pawns:
-        pawn_to_be_added = str(i)
-        coors = COLS.index(pawn_to_be_added[2]) + (48)
-        board_in[coors] = i
+    
     return board_in
+
+
 
 def current_board(board_in):
     current_row = []
@@ -28,6 +26,14 @@ def current_board(board_in):
         current_row = []
     return "This is current board"
 
-         
+def pawn_setup(board_in):
+    pawns = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
+    for i in pawns:
+        pawn_to_be_added = str(i)
+        coors = COLS.index(pawn_to_be_added[2]) + (48)
+        board_in[coors] = i
+
+
 board_out = creation_of_field()
+pawn_setup(board_out)
 print(current_board(board_out))
