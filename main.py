@@ -100,4 +100,5 @@ if __name__ == "__main__":
 
         figure_movement(fig, pos_list) 
         (current_board(board_out))
+        #test
         break
