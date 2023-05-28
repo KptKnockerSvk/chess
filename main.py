@@ -64,7 +64,7 @@ def figure_movement(choice, num):
     
 
 
-
+#pc init
 #Initialisation
 board_out, all_figs = creation_of_field()
 print(current_board(board_out))
