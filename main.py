@@ -50,22 +50,54 @@ def figure_transformation(board_in, given_list, set=None):
 
                 
     else:
+        h_list = [[]]
         for i in figs:
-            fig_to_be_added = str(i)
-            coors = COLS.index(fig_to_be_added[2]) + ((8 - int(fig_to_be_added[3]))*8)
-            board_in[coors] = i
+            z = 0
+            if i[0] == '"':
+               z = 0
+            if i[0] in "abcdefgh": 
+               z = 2
+            fig_to_be_added = str(i)            
+            coors = COLS.index(fig_to_be_added[2-z]) + ((8 - int(fig_to_be_added[3-z]))*8)
+            if z == 2:
+                h_list[0] = i
+                board_in[coors] = h_list
+            else:
+                board_in[coors] = i
 
 
 def figure_movement(choice, num):
     fig, num = choice, num
+    num_string = str(num)
+    str_1 = num_string[2][0][0]
+    str_2 = num_string[3][0][0]
+    ret_list = [[]]
     if fig == "p":
-        print(ord("a"))
+        new_num = str_1 + str(int(str_2) + 1)            
+        ret_list[0] = new_num
+        figure_transformation(board_out, ret_list)
+        pass
 
-    
 
 
-#pc init
 #Initialisation
-board_out, all_figs = creation_of_field()
-print(current_board(board_out))
-figure_movement("p", "a2")
+if __name__ == "__main__":
+    board_out, all_figs_in = creation_of_field()  
+    all_figs = all_figs_in[:]  
+
+    while True:        
+        #(current_board(board_out))
+
+        fig = "p" #(input("strWhich figure do you want to move: P - awn " + "\n"))
+        fig = fig.lower()
+        if fig == "p":
+            pos = "d2" #input("strWhich one: " + str(all_figs[0]) + "\n")
+            pos_list = [[]]
+            pos_list[0] = pos
+            pos_index = all_figs[0].index(pos_list)
+            all_figs[0][3] = "__"
+            print(all_figs)
+
+        figure_movement(fig, pos_list) 
+        (current_board(board_out))
+        break
