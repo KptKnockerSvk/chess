@@ -66,7 +66,6 @@ def figure_transformation(board_in, given_list, set=None):
             else:
                 board_in[coors] = i
 
-
 def figure_movement(choice, num):
     fig, num = choice, num
     num_string = str(num)
@@ -81,19 +80,51 @@ def figure_movement(choice, num):
 
 def pawn_movement():      
     print("Your pawns are:\n", PAWNS,"\n")
-    pos = "a2" # input("str-Which one: ") #
+    pos = "b2" # input("str-Which one: ") #
 
     #Check for enemy
     x = ord(pos[0]) - 1
     y = ord(pos[0]) + 1
-    print(x,y)
+    h_l_1 = chr(y) + str(int(pos[1]) + 1)
+    h_l_2 = chr(x) + str(int(pos[1]) + 1)
+    next_pos = []
+    #Positions for attackable enemy figures
     if x == 96:
-        h_list = chr(y) + str(int(pos[1]) + 1)
+        next_pos.append(h_l_1)
     elif y == 105:
-        h_list = chr(x) + str(int(pos[1]) + 1)
+        next_pos.append(h_l_2)
     else:
-        pass
-    print(h_list)
+        next_pos.append(h_l_1)
+        next_pos.append(h_l_2)
+    help_list = next_pos[:]
+    for i in next_pos:        
+        if i in board_out:
+            pass
+        else:
+            help_list.remove(i)
+    next_pos = help_list[:]
+    #Check for possible move
+    front = [[]]
+    front[0] = pos[0] + str(int(pos[1])+1)
+    if front in board_out:
+        x = 1
+        print("Position up is occupied")
+    else:
+        x = 2
+        print("Position up is not occupied")
+        front = str(front)
+        front = front[2] + front[3]
+        
+        next_pos.append(front)
+    
+    if len(next_pos) > 0:
+        choose = int(input(f"int-Choose whitch one: \n{next_pos} \n--> "))
+        next_pos = next_pos[choose-1]
+        print(f"You have chosen {next_pos}")
+    else:
+        print("Not good")    
+       
+    
     pos_list = [[]]
     while True:
         if int(pos[1]) == 2:
