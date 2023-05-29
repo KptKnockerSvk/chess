@@ -1,4 +1,11 @@
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
+PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
+TOWERS = [["a1"], ["h1"]]
+HORSES = [["b1"], ["g1"]]
+BISHOPS = [["c1"], ["f1"]]
+ROYALS = [["d1"], ["e1"]]
+        
+all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
 
 
 def creation_of_field():
@@ -10,16 +17,10 @@ def creation_of_field():
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 5
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 6 
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"]]    # 7
-                     # A0  B1  C2  D3  E4  F5  G6  H7
-
-    pawns = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
-    towers = [["a1"], ["h1"]]
-    horses = [["b1"], ["g1"]]
-    bishops = [["c1"], ["f1"]]
-    royals = [["d1"], ["e1"]]
-    all_figs = [pawns, towers, horses, bishops, royals]
-    figure_transformation(board_in, all_figs, 1)
-    return board_in, all_figs
+                     # A0  B1  C2  D3  E4  F5  G6  H7    
+    
+    figure_transformation(board_in, all_figs_in, 1)
+    return board_in
 
 
 
@@ -78,27 +79,37 @@ def figure_movement(choice, num):
         figure_transformation(board_out, ret_list)
         pass
 
+def pawn_movement():
+    pass
+
 
 
 #Initialisation
 if __name__ == "__main__":
-    board_out, all_figs_in = creation_of_field()  
-    all_figs = all_figs_in[:]  
-
+    board_out = creation_of_field()
     while True:        
         #(current_board(board_out))
 
-        fig = "p" #(input("strWhich figure do you want to move: P - awn " + "\n"))
+        fig = "p" #(input("str-Which figure do you want to move: P - awn " + "\n")) # 
         fig = fig.lower()
         if fig == "p":
-            pos = "d2" #input("strWhich one: " + str(all_figs[0]) + "\n")
+            print("Your pawns are:\n", PAWNS,"\n")
+            pos = "h2" # input("str-Which one: ") #
             pos_list = [[]]
-            pos_list[0] = pos
-            pos_index = all_figs[0].index(pos_list)
-            all_figs[0][3] = "__"
-            print(all_figs)
-
-        figure_movement(fig, pos_list) 
+            while True:
+                if int(pos[1]) == 2:
+                    double_step = 1 #int(input("1 or 2 ")) - 1 #
+                else:
+                    double_step = 0
+                pos_list[0] = pos
+                pos_index = PAWNS.index(pos_list)
+                board_out[8 * (8 - int(pos[1])) + pos_index] = ["__"]
+                PAWNS[pos_index] = pos[0] + str(int(pos[1]) + 1 + double_step)
+                pos_list[0] = pos[0] + str(int(pos[1]) + double_step)
+                break
+            
+            
+        
+        figure_movement(fig, pos_list)         
         (current_board(board_out))
-        #test
         break
