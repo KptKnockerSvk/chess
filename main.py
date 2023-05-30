@@ -1,6 +1,6 @@
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
 PAWNS = [["a3"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
-TOWERS = [["a1"], ["h1"]]
+TOWERS = [["d5"], ["h1"]]
 HORSES = [["b1"], ["g1"]]
 BISHOPS = [["c1"], ["f1"]]
 ROYALS = [["d1"], ["e1"]]
@@ -17,8 +17,8 @@ def creation_of_field():
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 5
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 6 
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"]]    # 7
-                    # A0  B1  C2  D3  E4  F5  G6  H7    
-                    # 97  98  99  100  101 102 103 104
+                # A0      B1      C2      D3      E4      F5      G6      H7    
+                # 97      98      99      100     101     102     103     104
     figure_transformation(board_in, all_figs_in, 1)
     return board_in
 
@@ -157,16 +157,52 @@ def pawn_movement():
 
 def tower_movement():
     #choose which tower
-    #if friendly in way
-    #if attack is possible
-    return pos_list
+    tower_str = 0 # int(input(f"int-Which one tower?: \n{TOWERS} \n--> ")) -1 #
+    tower_str = str(TOWERS[tower_str])[2] + str(TOWERS[tower_str])[3]
+    tower_list = [[]]
+    tower_list[0] = tower_str
+
+    #Possible boxes for move
+    next_pos = []
+    attackable = []
+    index_of_tow = board_out.index(tower_list)     
+    l1 = [8,-8]
+    dic = {1:8, 2:-8, 3:1, 4:-1}
+    x,y  = 1, 1
+    f_num = (8 - int(tower_str[1])) * 8
+    while x < 5:
+        z = index_of_tow + dic[x] * y 
+        y += 1       
+        zz = dic[x]
+        if zz in l1 and board_out[z] == ["__"]:
+            next_pos.append(z)        
+        elif zz not in l1:
+            if z == (f_num-1) or z == (f_num+8):
+                x += 1    
+                y = 1  
+            else:
+                next_pos.append(z)                        
+        else:            
+            x += 1
+            y = 1
+            #if attack is possible
+            if 0 < z < 63:
+                attackable.append(z)
+
+    #Choose which one
+    choice = int(input(f"Which one: attack {attackable} or \n{next_pos} \n"))
+    next_pos = next_pos[choice]
+
+       
+    
+    #return pos_list
 
 
 #Initialisation
 if __name__ == "__main__":
     board_out = creation_of_field()
     while True:      
-        fig =  (input("str-Which figure do you want to move: P - awn " + "\n")) # "p" #
+        fig =  (input("str-Which figure do you want to move: P-awn, T-ower " + "\n")) # "t" # 
         fig = fig.lower()    
 
         if fig == "p":                         
