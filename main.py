@@ -80,14 +80,16 @@ def figure_movement(choice, num):
 
 def pawn_movement():      
     print("Your pawns are:\n", PAWNS,"\n")
-    pos = "b2" # input("str-Which one: ") #
-
+    pos =  int(input("int-Which one: ")) - 1 # "b2" #
+    pos = str(PAWNS[pos])
+    pos = pos[2] + pos[3]
     #Check for enemy
     x = ord(pos[0]) - 1
     y = ord(pos[0]) + 1
     h_l_1 = chr(y) + str(int(pos[1]) + 1)
     h_l_2 = chr(x) + str(int(pos[1]) + 1)
     next_pos = []
+
     #Positions for attackable enemy figures
     if x == 96:
         next_pos.append(h_l_1)
@@ -98,11 +100,16 @@ def pawn_movement():
         next_pos.append(h_l_2)
     help_list = next_pos[:]
     for i in next_pos:        
-        if i in board_out:
-            pass
+        print(i)
+        help_i = [[]]
+        help_i[0] = i
+        if help_i in board_out:
+            print("Possible attack move! ")
         else:
             help_list.remove(i)
+    
     next_pos = help_list[:]
+    
     #Check for possible move
     front = [[]]
     front[0] = pos[0] + str(int(pos[1])+1)
@@ -126,16 +133,19 @@ def pawn_movement():
        
     
     pos_list = [[]]
+    moving_pawn = [[]]
     while True:
         if int(pos[1]) == 2:
-            double_step = 1 #int(input("1 or 2 ")) - 1 #
+            double_step = int(input("1 or 2 ")) - 1 # 1 #
         else:
             double_step = 0
         pos_list[0] = pos
         pos_index = PAWNS.index(pos_list)
         board_out[8 * (8 - int(pos[1])) + pos_index] = ["__"]
-        PAWNS[pos_index] = pos[0] + str(int(pos[1]) + 1 + double_step)
+        moving_pawn[0] = pos[0] + str(int(pos[1]) + 1 + double_step)
+        PAWNS[pos_index] = moving_pawn
         pos_list[0] = pos[0] + str(int(pos[1]) + double_step)
+        print(pos_list)
         return pos_list
 
 
@@ -144,12 +154,14 @@ def pawn_movement():
 if __name__ == "__main__":
     board_out = creation_of_field()
     while True:      
-        fig = "p" #(input("str-Which figure do you want to move: P - awn " + "\n")) # 
+        fig = "p" # (input("str-Which figure do you want to move: P - awn " + "\n")) # 
         fig = fig.lower()    
 
         if fig == "p":                         
             pos_list = pawn_movement()   
+        elif fig == "q":
+            break
         
         figure_movement(fig, pos_list)         
-        #(current_board(board_out))
-        break
+        (current_board(board_out))
+        
