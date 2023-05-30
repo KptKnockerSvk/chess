@@ -1,5 +1,5 @@
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
-PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
+PAWNS = [["a3"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
 TOWERS = [["a1"], ["h1"]]
 HORSES = [["b1"], ["g1"]]
 BISHOPS = [["c1"], ["f1"]]
@@ -73,14 +73,14 @@ def figure_movement(choice, num):
     str_2 = num_string[3][0][0]
     ret_list = [[]]
     if fig == "p":
-        new_num = str_1 + str(int(str_2) + 1)            
+        new_num = str_1 + str_2         
         ret_list[0] = new_num
         figure_transformation(board_out, ret_list)
         pass
 
 def pawn_movement():      
     print("Your pawns are:\n", PAWNS,"\n")
-    pos =  int(input("int-Which one: ")) - 1 # "b2" #
+    pos =   int(input("int-Which one: ")) - 1 # 1 #
     pos = str(PAWNS[pos])
     pos = pos[2] + pos[3]
     #Check for enemy
@@ -99,8 +99,7 @@ def pawn_movement():
         next_pos.append(h_l_1)
         next_pos.append(h_l_2)
     help_list = next_pos[:]
-    for i in next_pos:        
-        print(i)
+    for i in next_pos:  
         help_i = [[]]
         help_i[0] = i
         if help_i in board_out:
@@ -120,12 +119,23 @@ def pawn_movement():
         x = 2
         print("Position up is not occupied")
         front = str(front)
-        front = front[2] + front[3]
-        
+        front = front[2] + front[3]        
         next_pos.append(front)
+
+    #Check for double
+    front = [[]] 
+    if pos[1] == "2":
+        front2 = pos[0] + str(int(pos[1]) + 2)
+        front[0] = front2
+        if front in board_out:
+            print(f"{front2} is currenctly occupied")
+        else:
+            next_pos.append(front2)
+
+
     
     if len(next_pos) > 0:
-        choose = int(input(f"int-Choose whitch one: \n{next_pos} \n--> "))
+        choose = int(input(f"int-Choose whitch one: \n{next_pos} \n--> ")) #1 # 
         next_pos = next_pos[choose-1]
         print(f"You have chosen {next_pos}")
     else:
@@ -135,33 +145,36 @@ def pawn_movement():
     pos_list = [[]]
     moving_pawn = [[]]
     while True:
-        if int(pos[1]) == 2:
-            double_step = int(input("1 or 2 ")) - 1 # 1 #
-        else:
-            double_step = 0
+        
         pos_list[0] = pos
         pos_index = PAWNS.index(pos_list)
         board_out[8 * (8 - int(pos[1])) + pos_index] = ["__"]
-        moving_pawn[0] = pos[0] + str(int(pos[1]) + 1 + double_step)
+        moving_pawn[0] = pos[0] + str(int(pos[1]) + 1)
         PAWNS[pos_index] = moving_pawn
-        pos_list[0] = pos[0] + str(int(pos[1]) + double_step)
-        print(pos_list)
+        pos_list[0] = next_pos
+        
         return pos_list
 
+def tower_movement():
+    #choose which tower
+    #if friendly in way
+    #if attack is possible
+    return pos_list
 
 
 #Initialisation
 if __name__ == "__main__":
     board_out = creation_of_field()
     while True:      
-        fig = "p" # (input("str-Which figure do you want to move: P - awn " + "\n")) # 
+        fig =  (input("str-Which figure do you want to move: P - awn " + "\n")) # "p" #
         fig = fig.lower()    
 
         if fig == "p":                         
             pos_list = pawn_movement()   
+        elif fig == "t":
+            pos_list = tower_movement()
         elif fig == "q":
             break
-        
         figure_movement(fig, pos_list)         
         (current_board(board_out))
-        
+
