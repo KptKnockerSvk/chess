@@ -22,8 +22,6 @@ def creation_of_field():
     figure_transformation(board_in, all_figs_in, 1)
     return board_in
 
-
-
 def current_board(board_out):
     current_row = []
     board_in = board_out
@@ -152,7 +150,6 @@ def pawn_movement():
         moving_pawn[0] = pos[0] + str(int(pos[1]) + 1)
         PAWNS[pos_index] = moving_pawn
         pos_list[0] = next_pos
-        
         return pos_list
 
 def tower_movement():
@@ -165,7 +162,8 @@ def tower_movement():
     #Possible boxes for move
     next_pos = []
     attackable = []
-    index_of_tow = board_out.index(tower_list)     
+    index_of_tow = board_out.index(tower_list)    
+    index_of_tows = TOWERS.index(tower_list)
     l1 = [8,-8]
     dic = {1:8, 2:-8, 3:1, 4:-1}
     x,y  = 1, 1
@@ -189,27 +187,59 @@ def tower_movement():
             if 0 < z < 63:
                 attackable.append(z)
 
-    #Choose which one
-    choice = int(input(f"Which one: attack {attackable} or \n{next_pos} \n"))
-    next_pos = next_pos[choice]
-
-       
+    #Choose which one  
+    choice = (input(f"A-ttack {attackable} \nor M-ove {next_pos} \n"))    
+    if choice == "a" and len(attackable) != 0:
+        choice = int(input(f"Which one:\n{attackable} ")) - 1
+        next_pos = attackable[choice]
+        
+    else:
+        choice = int(input(f"Which one:\n{next_pos} \n")) - 1
+        next_pos = next_pos[choice]
     
-    #return pos_list
+    #Transformation    
+    board_out[index_of_tow] = ["__"]
+    x = 0
+    pos_list = [[]]
+    while True:
+        if x == 1:
+            break
+        for i in range(7):
+            z = next_pos - (56 - (i*8))
+            zz = 8 - i -1
+            if z > 0:
+                tower_str = COLS[z] + str(zz)
+                
+                x = 1
+                break
+            else:
+                pass
+    #Setting TOWERS, boardout, making postition from number (35 to d4)
+    pos_list[0] = tower_str
+    TOWERS[index_of_tows] = pos_list
+    board_out[next_pos] = pos_list   
+    print(pos_list)
+    return pos_list
+        
+def horse_movement():
+    pass
 
 
 #Initialisation
 if __name__ == "__main__":
     board_out = creation_of_field()
     while True:      
-        fig =  (input("str-Which figure do you want to move: P-awn, T-ower " + "\n")) # "t" # 
+        fig =  (input("str-Which figure do you want to move: P-awn, T-ower, H-orse " + "\n")) # "t" # 
         fig = fig.lower()    
 
         if fig == "p":                         
             pos_list = pawn_movement()   
         elif fig == "t":
             pos_list = tower_movement()
-        elif fig == "q":
+        elif fig == "h":
+            pos_list = horse_movement()
+        else:
+            print("Either wrong input or Q")
             break
         figure_movement(fig, pos_list)         
         (current_board(board_out))
