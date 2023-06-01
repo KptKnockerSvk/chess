@@ -1,7 +1,7 @@
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
 PAWNS = [["a3"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
-TOWERS = [["d5"], ["h1"]]
-HORSES = [["b1"], ["g1"]]
+TOWERS = [["a1"], ["h1"]]
+HORSES = [["a8"], ["g1"]]
 BISHOPS = [["c1"], ["f1"]]
 ROYALS = [["d1"], ["e1"]]
         
@@ -9,7 +9,7 @@ all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
 
 
 def creation_of_field():
-    board_in = [["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
+    board_in = [["__"], ["__"], ["c7"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 1
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 2
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 3
@@ -222,8 +222,48 @@ def tower_movement():
     return pos_list
         
 def horse_movement():
-    pass
+    horse_pos = 0 # int(input(f"Which one:\n{TOWERS}")) - 1 #0
+    horse_str = str(HORSES[horse_pos]) 
+    horse_str = horse_str[2] + horse_str[3]
+    
+    #Possible movement
+    x = chr(ord(horse_str[0]) - 2)
+    y = int(horse_str[1]) + 1
+    
+    pos_list = []
+    for i in range(2):
+        if i == 1:
+            y = int(y[1])
+        st1 = x + str(y - i*2) #b6
+        st2 = chr(ord(x) + 1) + str((y + 1) - (4*i)) #c7
+        st3 = chr(ord(x) + 3) + str((y + 1) - 4*i) #e7
+        st4 = chr(ord(x) + 4) + str(y - 2*i)     #f6
+        st_list = [st1, st2, st3, st4]
+        for y in st_list:
+            if y[0] in "abcdefgh" and 0 < int(y[1]) < 9 and len(y) == 2:
+                pos_list.append(y)
+    
+    #check if valid
+    help_list2 = pos_list[:]
+    h_list = [[]]
+    for i in help_list2:
+        h_list[0] = i
+        if h_list in board_out:
+            print(f"Sorry pal, {h_list[0]} is occupied")
+            pos_list.remove(h_list[0])
+    
+    #Choosing fig to move
+    choice = 0 # int(input(f"int-Choose which one {pos_list}")) - 1#
+    pos_list = pos_list[choice]
+    board_out[COLS.index(pos_list[0]) + ((8 - pos_list[1]) *8)] =
+    #HORSES 
+    print(HORSES, "||", pos_list)
+    return pos_list 
 
+    # return
+
+        
+        
 
 #Initialisation
 if __name__ == "__main__":
