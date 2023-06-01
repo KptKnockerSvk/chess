@@ -1,8 +1,8 @@
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
-PAWNS = [["a3"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
+PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
 TOWERS = [["a1"], ["h1"]]
-HORSES = [["a8"], ["g1"]]
-BISHOPS = [["c1"], ["f1"]]
+HORSES = [["b1"], ["g1"]]
+BISHOPS = [["c5"], ["f1"]]
 ROYALS = [["d1"], ["e1"]]
         
 all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
@@ -36,9 +36,9 @@ def current_board(board_out):
         current_row = []
     return "This is current board"
 
-def figure_transformation(board_in, given_list, set=None):
+def figure_transformation(board_in, given_list, sett=None):
     figs = given_list[:]
-    x = set
+    x = sett
     if x == 1:
         for i in figs:
             #print(i)
@@ -66,6 +66,7 @@ def figure_transformation(board_in, given_list, set=None):
 
 def figure_movement(choice, num):
     fig, num = choice, num
+    print(fig, num, "||")
     num_string = str(num)
     str_1 = num_string[2][0][0]
     str_2 = num_string[3][0][0]
@@ -74,7 +75,12 @@ def figure_movement(choice, num):
         new_num = str_1 + str_2         
         ret_list[0] = new_num
         figure_transformation(board_out, ret_list)
+    if fig == "t":
         pass
+    if fig == "h":
+        pass
+    if fig == "b":
+        figure_transformation(board_out, num)
 
 def pawn_movement():      
     print("Your pawns are:\n", PAWNS,"\n")
@@ -207,7 +213,7 @@ def tower_movement():
         for i in range(7):
             z = next_pos - (56 - (i*8))
             zz = 8 - i -1
-            if z > 0:
+            if z >= 0:
                 tower_str = COLS[z] + str(zz)
                 
                 x = 1
@@ -222,7 +228,7 @@ def tower_movement():
     return pos_list
         
 def horse_movement():
-    horse_pos = 0 # int(input(f"Which one:\n{TOWERS}")) - 1 #0
+    horse_pos = 0 # int(input(f"Which one:\n{HORSES}")) - 1 #0
     horse_str = str(HORSES[horse_pos]) 
     horse_str = horse_str[2] + horse_str[3]
     
@@ -251,36 +257,70 @@ def horse_movement():
         if h_list in board_out:
             print(f"Sorry pal, {h_list[0]} is occupied")
             pos_list.remove(h_list[0])
-    
+            
     #Choosing fig to move
-    choice = 0 # int(input(f"int-Choose which one {pos_list}")) - 1#
+    timed_string = int(str(pos_list)[3])
+    choice = 0 # int(input(f"int-Choose which one {pos_list}")) - 1 #
     pos_list = pos_list[choice]
-    board_out[COLS.index(pos_list[0]) + ((8 - pos_list[1]) *8)] =
-    #HORSES 
-    print(HORSES, "||", pos_list)
-    return pos_list 
+    board_out[COLS.index(pos_list[0]) + ((8 - timed_string) *8)] = ["__"]        
+    pos_list2 = [[]]
+    pos_list2[0] = pos_list
+    HORSES[horse_pos] = pos_list2
+    return pos_list2
 
     # return
 
-        
-        
+def bishop_movement():
+    choice = 0# int(input(f"Which one bishop?\n{BISHOPS}") - 1) #
+    bish_to_move = str(BISHOPS[choice])[2:4]
+    bish_index_in_board = board_out.index(BISHOPS[choice])
+    #Check for valid move  
+    pos_list = []
+    for i in range(4):  
+        x = 1
+        if i == 0: #Values for heading
+            y, z = 1, 1
+        elif i == 1:
+            y, z = -1, 1
+        elif i == 2:
+            y, z = -1,-1
+        else:
+            y, z = 1,-1
+        while True:
+            next_string = chr(ord(bish_to_move[0]) + y*x) + str(int(bish_to_move[1]) + z*x)            
+            x += 1
+            if 96 < ord(next_string[0]) < 105 and 0 < int(next_string[1]) < 9:
+                index_of_this_pos = COLS.index(next_string[0]) + ((8 - int(next_string[1])) * 8)
+                if board_out[index_of_this_pos] == ["__"]:
+                    pos_list.append(next_string)
+            else:
+                break  
+    #Choose next pos
+    choose = 0 # int(input(f"Choose next position {pos_list}")) - 1 #
+    pos_list = [pos_list[choose]]
+    board_out[bish_index_in_board] = ["__"]
+    BISHOPS[choice] = pos_list
+    return pos_list
 
 #Initialisation
 if __name__ == "__main__":
     board_out = creation_of_field()
     while True:      
-        fig =  (input("str-Which figure do you want to move: P-awn, T-ower, H-orse " + "\n")) # "t" # 
+        fig =  (input("str-Which figure do you want to move: P-awn, T-ower, H-orse, B-ishop " + "\n")) # "t" # 
         fig = fig.lower()    
 
         if fig == "p":                         
             pos_list = pawn_movement()   
+            figure_movement(fig, pos_list) 
         elif fig == "t":
             pos_list = tower_movement()
         elif fig == "h":
             pos_list = horse_movement()
+        elif fig == "b":
+            pos_list = bishop_movement()
         else:
             print("Either wrong input or Q")
             break
-        figure_movement(fig, pos_list)         
+                
         (current_board(board_out))
 
