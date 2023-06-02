@@ -3,13 +3,13 @@ PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
 TOWERS = [["a3"], ["h1"]]
 HORSES = [["b1"], ["g1"]]
 BISHOPS = [["c1"], ["f1"]]
-ROYALS = [["d1"], ["e1"]]
+ROYALS = [["d3"], ["e1"]]
         
 all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
 
 
 def creation_of_field():
-    board_in = [["__"], ["__"], ["c7"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
+    board_in = [["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 1
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 2
                 ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 3
@@ -45,36 +45,34 @@ def figure_transformation(board_in, given_list, sett=None):
             for y in i:
                 fig_to_be_added = str(y)
                 coors = COLS.index(fig_to_be_added[2]) + ((8 - int(fig_to_be_added[3]))*8)
-                board_in[coors] = y
-                
+                board_in[coors] = y           
     else:
-        h_list = [[]]
-        for i in figs:
-            z = 0
-            if i[0] == '"':
-               z = 0
-            if i[0] in "abcdefgh": 
-               z = 2
-            fig_to_be_added = str(i)            
-            coors = COLS.index(fig_to_be_added[2-z]) + ((8 - int(fig_to_be_added[3-z]))*8)
-            if z == 2:
-                h_list[0] = i
-                board_in[coors] = h_list
-            else:
-                board_in[coors] = i
+        print("No need for transf")     
+    
 
-def figure_movement(choice, num):
-    fig, num = choice, num
+def figure_movement(choice, numm, indx, fg_indx):
+    fig, num, index, fig_index = choice, numm, indx, fg_indx
     num_string = str(num)
     str_1 = num_string[2][0][0]
-    str_2 = num_string[3][0][0]
-    ret_list = [[]]
-    if fig == "p":
-        new_num = str_1 + str_2         
-        ret_list[0] = new_num
-        figure_transformation(board_out, ret_list)
+    str_2 = num_string[3][0][0]    
+    new_index = COLS.index(str_1) + ((8 - int(str_2)) * 8)
+    board_out[new_index] = num
+    board_out[index] = ["__"]
+
+    if fig == "p":    
+        PAWNS[fig_index] = num  
+    elif fig == "t":
+        TOWERS[fig_index] = num
+    elif fig == "h":
+        HORSES[fig_index] = num
+    elif fig == "b":
+        BISHOPS[fig_index] = num          
+    elif fig == "q":
+        ROYALS[0] = num
+    elif fig == "k":
+        ROYALS[1] = num          
     else: 
-        figure_transformation(board_out, num)
+        print("Failll")
 
 def pawn_movement():      
     print("Your pawns are:\n", PAWNS,"\n")
@@ -157,9 +155,10 @@ def tower_movement():
     tower_str = 0 # int(input(f"int-Which one tower?: \n{TOWERS} \n--> ")) -1 #
     tower_str = str(TOWERS[tower_str])[2] + str(TOWERS[tower_str])[3]
     tower_list = [[]]
-    tower_list[0] = tower_str
+    tower_list[0] = tower_str    
     index_of_tows = TOWERS.index(tower_list)
     index_of_tow = board_out.index(tower_list)
+    print(index_of_tows)
 
     attackable, next_pos = straight_movement(tower_str, tower_list)
 
@@ -182,7 +181,7 @@ def tower_movement():
             break
         for i in range(7):
             z = next_pos - (56 - (i*8))
-            zz = 8 - i -1
+            zz = 8 - i + 1
             if z >= 0:
                 tower_str = COLS[z] + str(zz)
                 
@@ -194,7 +193,6 @@ def tower_movement():
     pos_list[0] = tower_str
     TOWERS[index_of_tows] = pos_list
     board_out[next_pos] = pos_list   
-    print(pos_list)
     return pos_list
         
 def horse_movement():
@@ -240,30 +238,6 @@ def horse_movement():
 
     # return
 
-def diagonal_movement(fig_pos):
-    f_pos = fig_pos
-    pos_list = []
-    for i in range(4):  
-        x = 1
-        if i == 0: #Values for heading
-            y, z = 1, 1
-        elif i == 1:
-            y, z = -1, 1
-        elif i == 2:
-            y, z = -1,-1
-        else:
-            y, z = 1,-1
-        while True:
-            next_string = chr(ord(f_pos[0]) + y*x) + str(int(f_pos[1]) + z*x)            
-            x += 1
-            if 96 < ord(next_string[0]) < 105 and 0 < int(next_string[1]) < 9:
-                index_of_this_pos = COLS.index(next_string[0]) + ((8 - int(next_string[1])) * 8)
-                if board_out[index_of_this_pos] == ["__"]:
-                    pos_list.append(next_string)
-            else:
-                break  
-    return pos_list
-
 def bishop_movement():
     choice = 0# int(input(f"Which one bishop?\n{BISHOPS}") - 1) #
     bish_to_move = str(BISHOPS[choice])[2:4]
@@ -278,47 +252,138 @@ def bishop_movement():
     BISHOPS[choice] = pos_list
     return pos_list
 
-def straight_movement(fig, f_list):
-    fig_str = fig
-    fig_list = f_list
-
-    #Possible boxes for move
-    next_pos = []
-    attackable = []
-    index_of_fig = board_out.index(fig_list)        
-    l1 = [8,-8]
-    dic = {1:8, 2:-8, 3:1, 4:-1}
-    x,y  = 1, 1
-    f_num = (8 - int(fig_str[1])) * 8
-    while x < 5:
-        z = index_of_fig + dic[x] * y 
-        y += 1       
-        zz = dic[x]
-        if zz in l1 and board_out[z] == ["__"]:
-            next_pos.append(z)        
-        elif zz not in l1:
-            if z == (f_num-1) or z == (f_num+8):
-                x += 1    
-                y = 1  
-            else:
-                next_pos.append(z)                        
-        else:            
-            x += 1
-            y = 1
-            #if attack is possible
-            if 0 < z < 63:
-                attackable.append(z)
-    return attackable, next_pos
-
 def queen_movement():
     queen_as_str = str(ROYALS[0])[2:4]
+    q_index_as_board = board_out.index(ROYALS[0])
+    index_in_queens = 0
 
-    first_list = diagonal_movement(queen_as_str)
-    second_list = straight_movement(queen_as_str)
-    first_list = first_list[:] + second_list[:]
+    first_list, fourth_list = diagonal_movement(queen_as_str)
+    second_list, third_list = straight_movement(queen_as_str)   
+
+    third_list = fourth_list[:] + third_list[:]
+    first_list = first_list[:] + second_list[:] 
+    #Choose which one
+    choice = choose_a_choice(first_list, third_list)
+
+    
+    #Transformation    
+    pos_list = [choice]
+    return pos_list, q_index_as_board, index_in_queens 
 
 def king_movement():
-    pass
+    king_as_str = str(ROYALS[1])[2:4]
+
+    first_list, fourth_list = diagonal_movement(king_as_str)
+    second_list, third_list = straight_movement(king_as_str)    
+
+    third_list = fourth_list[:] + third_list[:]
+    first_list = first_list[:] + second_list[:] + third_list[:]
+
+    #Choose which one
+    attackable = []
+    moveable = []
+    #kings ords, num    
+    xx = ord(king_as_str[0])
+    xy = int(king_as_str[1])
+    for i in first_list:
+        #check if in range of king
+        x = ord(i[0])
+        y = int(i[1])
+        if xx - x == 1 or xx - x == -1 and  xy - 1 == y or xy + 1 == y:
+            if i in third_list:
+                attackable.append(i)
+            else:
+                moveable.append(i)
+    
+    
+    #return 
+    
+
+def straight_movement(fig):
+    fig_str = fig
+    #Possible boxes for move
+    next_pos = []
+    attackable = []       
+    for i in range(4):        
+        x = 1
+        if i == 0: #Values for heading
+            y, z = 0, 1
+        elif i == 1:
+            y, z = 1, 0
+        elif i == 2:
+            y, z = 0,-1
+        else:
+            y, z = -1,0
+        while True:
+            next_string = chr(ord(fig_str[0]) + y*x) + str(int(fig_str[1]) + z*x)  
+            x += 1
+            if 96 < ord(next_string[0]) < 105 and 0 < int(next_string[1]) < 9:
+                ind_of_str = COLS.index(next_string[0]) + ((8 - int(next_string[1])) * 8)
+                if [next_string] in board_out:
+                    break
+                if len(board_out[ind_of_str]) == "3aa":
+                    attackable.append(next) 
+                    break
+                elif board_out[ind_of_str] == ["__"]:
+                    next_pos.append(next_string)
+                else:
+                    break
+            else:
+                break
+    return next_pos, attackable
+
+def choose_a_choice(move, attack):
+    movee = move[:]
+    attackk = attack[:]
+    while True:
+        if len(movee) == 0:
+            type_of_move = "a" 
+            print("You can only attack")   
+        elif len(attack) == 0:
+            type_of_move = "m"
+            print("You can only move") 
+        else:
+            type_of_move = input(f"str-Attack: {attackk}\n or Move{movee} ").lower()
+        if type_of_move == "m":
+            choosen_list = movee[:]
+        elif type_of_move == "a":
+            choosen_list = attackk[:]
+        choice = choosen_list[int(input(f"int-Choose where to go\n{choosen_list}\n--> ")) - 1]
+        break
+    print(f"You have choosen --> {choice} <--")
+    return choice
+
+def diagonal_movement(fig_pos):
+    f_pos = fig_pos
+    next_pos = []
+    attackable = []
+    for i in range(4):  
+        x = 1
+        if i == 0: #Values for heading
+            y, z = 1, 1
+        elif i == 1:
+            y, z = -1, 1
+        elif i == 2:
+            y, z = -1,-1
+        else:
+            y, z = 1,-1
+        while True:
+            next_string = chr(ord(f_pos[0]) + y*x) + str(int(f_pos[1]) + z*x)  
+            x += 1
+            if 96 < ord(next_string[0]) < 105 and 0 < int(next_string[1]) < 9:
+                ind_of_str = COLS.index(next_string[0]) + ((8 - int(next_string[1])) * 8)
+                if [next_string] in board_out:
+                    break
+                if len(board_out[ind_of_str]) == "3aa":
+                    attackable.append(next) 
+                    break
+                elif board_out[ind_of_str] == ["__"]:
+                    next_pos.append(next_string)
+                else:
+                    break
+            else:
+                break
+    return next_pos, attackable
 
 #Initialisation
 if __name__ == "__main__":
@@ -337,13 +402,13 @@ if __name__ == "__main__":
         elif fig == "b":
             pos_list = bishop_movement()
         elif fig == "q":
-            pos_list = queen_movement()
+            pos_list, old_index, fig_index = queen_movement()
         elif fig == "k":
             pos_list = king_movement()
         else:
             print("Either wrong input or E")
             break
 
-        figure_movement(fig, pos_list)        
+        figure_movement(fig, pos_list, old_index, fig_index)        
         (current_board(board_out))
 
