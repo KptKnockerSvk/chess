@@ -1,4 +1,11 @@
-from turtle import *
+import pygame 
+
+#CONSTANTS
+BLACK = (90,89,84)
+WHITE = (255,255,255)
+WIDTH = 600
+HEIGHT = 600
+CURRENT_ROUND = 0
 
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
 PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
@@ -15,6 +22,89 @@ ROYALS2 = [["e8"], ["d8"]]
 
 all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
 sec_team_all_figs = [PAWNS2, TOWERS2, HORSES2, BISHOPS2, ROYALS2]
+main_player = all_figs_in[:]
+enemy_player = sec_team_all_figs[:]
+#IMAGES
+pawn = pygame.image.load("images\pawn.png")
+
+#SCREEN INIT
+pygame.init()
+win = pygame.display.set_mode((800, 800))
+pygame.display.set_caption("Chess Master Pro Ultimate Edition")
+pygame.display.set_icon(pawn)
+
+clock = pygame.time.Clock()
+
+#Get "a2" of clicked position
+def get_clicked_coords(poss):
+    pos = poss
+    
+    if pos != None:   
+        if 0 < pos[0] < 800:   
+            if 0 < pos[0] < 100:
+                first = "a"
+            elif pos[0] < 200:
+                first = "b"
+            elif pos[0] < 300:
+                first = "c"
+            elif pos[0] < 400:
+                first = "d"
+            elif pos[0] < 500:
+                first = "e"
+            elif pos[0] < 600:
+                first = "f"
+            elif pos[0] < 700:
+                first = "g"
+            elif pos[0] < 800:
+                first = "h"
+
+        if 0 < pos[1] < 800:
+            if 0 < pos[1] < 100:
+                sec = "8"
+            elif pos[1] < 200:
+                sec = "7"
+            elif pos[1] < 300:
+                sec = "6"
+            elif pos[1] < 400:
+                sec = "5"
+            elif pos[1] < 500:
+                sec = "4"
+            elif pos[1] < 600:
+                sec = "3"
+            elif pos[1] < 700:
+                sec = "2"
+            elif pos[1] < 800:
+                sec = "1"
+        strng = first + sec
+        indx = -1
+        dic_for_fig = {
+            0: PAWNS,
+            1: TOWERS,
+            2: HORSES,
+            3: BISHOPS,
+            4: ROYALS}
+        
+        z = [strng]
+        end = 0
+        for i in all_figs_in:            
+            if end == 1:
+                break
+            indx += 1
+            for y in i:
+                if z == y:
+                    index_of_cur_fig = i.index(z)
+                    dic_val = dic_for_fig[indx] 
+                    end = 1
+                    if indx == 4 and z == ROYALS[1]:
+                        indx = 5
+                    break  
+        return indx, z
+
+#If string "a2" is given, find fig_type and change pos on click
+def change_pos(text):
+    strng = text
+    
+
 
 
 def creation_of_field():
@@ -82,13 +172,13 @@ def figure_movement(choice, numm, indx, fg_indx):
     else: 
         print("Failll")
 
-def pawn_movement():      
-    print("Your pawns are:\n", PAWNS,"\n")
-    pos =   int(input("int-Which one: ")) - 1 # 1 #
-    pos = str(PAWNS[pos])
+def pawn_movement(cor):        
+    
+    pos = str(cor)
     pos = pos[2] + pos[3]
     p_index_as_board = board_out.index([pos])
     index_in_pawns = PAWNS.index([pos])
+    print( p_index_as_board, index_in_pawns)
     #Check for enemy
     x = ord(pos[0]) - 1
     y = ord(pos[0]) + 1
@@ -142,7 +232,7 @@ def pawn_movement():
     
     choice = choose_a_choice(next_pos, attackable)   
        
-    
+
     return [choice], p_index_as_board, index_in_pawns 
 
 def tower_movement():
@@ -156,7 +246,7 @@ def tower_movement():
 
     #Choose which one  
     choice = choose_a_choice(next_pos, attackable)
-
+    print("asdkj")
     return [choice], index_of_tow, index_of_tows
         
 def horse_movement():
@@ -331,22 +421,32 @@ def straight_movement(fig):
 def choose_a_choice(move, attack):
     movee = move[:]
     attackk = attack[:]
+    xx = 0
     while True:
+        if xx == 1:
+            break
         if len(movee) == 0:
             type_of_move = "a" 
-            print("You can only attack")   
+            print(f"You can only attack, {attackk}")   
         elif len(attack) == 0:
             type_of_move = "m"
-            print("You can only move") 
+            print(f"You can only move, {move}") 
         else:
             type_of_move = input(f"str-Attack: {attackk}\n or Move{movee} ").lower()
         if type_of_move == "m":
             choosen_list = movee[:]
         elif type_of_move == "a":
             choosen_list = attackk[:]
-        choice = choosen_list[int(input(f"int-Choose where to go\n{choosen_list}\n--> ")) - 1]
-        break
-    print(f"You have choosen --> {choice} <--")
+        while True:
+            if xx == 1:
+                break
+            for event in pygame.event.get():                
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    __, choice = get_clicked_coords(pos)
+                    print(f"You have choosen --> {choice} <--")
+                    xx = 1
+                    break
     return choice
 
 def diagonal_movement(fig_pos):
@@ -386,9 +486,8 @@ def diagonal_movement(fig_pos):
                 break
     return next_pos, attackable
 
-def current_player(round):
+def current_player(round):    
     current_round = round
-
     main_player = all_figs_in[:]
     enemy_player = sec_team_all_figs[:]
     
@@ -401,34 +500,81 @@ def current_player(round):
     return main_player, enemy_player
 
 
+board_out = creation_of_field() 
+
+
+
 #Initialisation
+def game_init(figg, cor):
+    fig = figg       
+    coor = cor 
+    
+    if fig == 0:                         
+        pos_list = pawn_movement(coor)   
+    elif fig == 1:
+        pos_list, old_index, fig_index = tower_movement()
+    elif fig == 2:
+        pos_list, old_index, fig_index = horse_movement()
+    elif fig == 3:
+        pos_list, old_index, fig_index = bishop_movement()
+    elif fig == 4:
+        pos_list, old_index, fig_index = queen_movement()
+    elif fig == 5:
+        pos_list, old_index, fig_index = king_movement()
+    else:
+        print("Either wrong input or E")
+    print("wotahek||||||||||||||||", pos_list, old_index, fig_index)
+    figure_movement(fig, pos_list, old_index, fig_index)        
+
+
+cur_round_val = 0
 if __name__ == "__main__":
-    board_out = creation_of_field()    
-    current_round = 0
-    while True:  
-        current_round += 1    
-        (current_board(board_out))
-        main_player, enemy_player = current_player(current_round)
-        check_if_chess(current_round)
-        fig =  (input("str-Which figure do you want to move: P-awn, T-ower, H-orse, B-ishop, Q-ueen, K-ing" + "\n")) # "t" # 
-        fig = fig.lower()    
-
-        if fig == "p":                         
-            pos_list, old_index, fig_index = pawn_movement()   
-        elif fig == "t":
-            pos_list, old_index, fig_index = tower_movement()
-        elif fig == "h":
-            pos_list, old_index, fig_index = horse_movement()
-        elif fig == "b":
-            pos_list, old_index, fig_index = bishop_movement()
-        elif fig == "q":
-            pos_list, old_index, fig_index = queen_movement()
-        elif fig == "k":
-            pos_list, old_index, fig_index = king_movement()
-        else:
-            print("Either wrong input or E")
-            break
-
-        figure_movement(fig, pos_list, old_index, fig_index)        
+    cur_round_val += 1
+    
+    running = True
+    pos = None
+    strng = None  
+    (current_board(board_out))
+    main_player, enemy_player = current_player(cur_round_val)
+    check_if_chess(cur_round_val)
+    while running:
         
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                fig, coor = get_clicked_coords(pos)
+                game_init(fig, coor)
+                (current_board(board_out))
+        #print rectangles of color
+        help_var = 0
+        for rows in range(8):
+            help_var += 1
+            for cols in range(8):
+                help_var += 1
+                if help_var % 2 == 0:
+                    color = BLACK
+                else:
+                    color = WHITE
+                pygame.draw.rect(win,color, (0+100*cols,0+100*rows,100,100))
+        
+        #Setting figures
+        for i in range(8):
+            win.blit(pawn, (0+100*i,600)) #1. do prava, 2. dole
 
+        if pos != None:
+            strng = get_clicked_coords(pos)
+
+        if strng != None:
+            change_pos(strng)
+
+        pygame.display.flip()
+        clock.tick(60)
+
+        pygame.quit
+
+
+    
+    
+    
