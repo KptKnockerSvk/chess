@@ -3,6 +3,9 @@ import pygame
 #CONSTANTS
 BLACK = (90,89,84)
 WHITE = (255,255,255)
+YELLOW = (243,155,6)
+GREEN = (62,200,0)
+
 WIDTH = 600
 HEIGHT = 600
 CURRENT_ROUND = 0
@@ -23,8 +26,6 @@ ROYALS2 = [["e8"], ["d8"]]
 
 all_figs_in = [PAWNS, TOWERS, HORSES, BISHOPS, ROYALS]
 sec_team_all_figs = [PAWNS2, TOWERS2, HORSES2, BISHOPS2, ROYALS2]
-main_player = all_figs_in[:]
-enemy_player = sec_team_all_figs[:]
 #IMAGES
 pawn = pygame.image.load("images\pawn.png")
 bishop = pygame.image.load("images\ig_bishop.png")

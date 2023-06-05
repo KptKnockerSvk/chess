@@ -1,20 +1,21 @@
 import pygame 
 from constants import *
+import time
 
 
 #SCREEN INIT
 pygame.init()
 win = pygame.display.set_mode((800, 800))
-pygame.display.set_caption("Chess Master Pro Ultimate Edition")
+pygame.display.set_caption("Chess Master Pro Ultimate Edition Ultra-Max Rerendered Remaster")
 pygame.display.set_icon(pawn)
 
 clock = pygame.time.Clock()
 
 #Get "a2" of clicked position
-def get_clicked_coords(poss):
-    pos = poss
-    
-    if pos != None:   
+def get_clicked_coords(poss, m_p):
+    main_player, pos = m_p[:], poss
+    indx = -1
+    if pos != None:    
         if 0 < pos[0] < 800:   
             if 0 < pos[0] < 100:
                 first = "a"
@@ -32,6 +33,8 @@ def get_clicked_coords(poss):
                 first = "g"
             elif pos[0] < 800:
                 first = "h"
+            else:
+                first = "N"
 
         if 0 < pos[1] < 800:
             if 0 < pos[1] < 100:
@@ -50,8 +53,11 @@ def get_clicked_coords(poss):
                 sec = "2"
             elif pos[1] < 800:
                 sec = "1"
+            else:
+                sec = "N"
         strng = first + sec
         indx = -1
+        
         dic_for_fig = {
             0: PAWNS,
             1: TOWERS,
@@ -61,19 +67,25 @@ def get_clicked_coords(poss):
         
         z = [strng]
         end = 0
-        for i in all_figs_in:            
+        for i in main_player:            
             if end == 1:
                 break
             indx += 1
             for y in i:
                 if z == y:
-                    index_of_cur_fig = i.index(z)
-                    dic_val = dic_for_fig[indx] 
                     end = 1
                     if indx == 4 and z == ROYALS[1]:
                         indx = 5
-                    break  
-        return indx, z
+                    break 
+        for iy in main_player:
+            for yyi in iy:
+                if z == yyi:
+                    cor_val = True
+                    return indx, z, cor_val
+        cor_val = False
+       
+
+        return indx, z, cor_val
     
 def creation_of_field():
     board_in = [["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
@@ -95,9 +107,7 @@ def current_board(board_out):
     
     for i in range(8):
         for y in range(8):
-            h = (i * 8) + y
-            
-            #print(board_in[h])
+            h = (i * 8) + y            
             current_row.append(board_in[h])
         print(str(current_row))
         current_row = []
@@ -116,40 +126,69 @@ def figure_transformation(board_in, given_list, sett=None):
     else:
         print("No need for transf")     
 
-def figure_movement(choice, numm, indx, fg_indx):
-    fig, num, index, fig_index = choice, numm, indx, fg_indx
+def figure_movement(choice, numm, indx, fg_indx, cr):
+    cur_r = cr
+    if cur_r % 2 == 1:
+        ran_val = 1
+    else:
+        ran_val = 0
+    fig, num, index, fig_index = choice, numm[:], indx, fg_indx
     num_string = str(num)
     str_1 = num_string[2][0][0]
     str_2 = num_string[3][0][0]    
-    new_index = COLS.index(str_1) + ((8 - int(str_2)) * 8)
-    board_out[new_index] = num
+    new_index = COLS.index(str_1) + ((8 - int(str_2)) * 8)    
     board_out[index] = ["__"]
+    board_out[new_index] = num
     
-    if fig == 0:    
-        PAWNS[fig_index] = num  
+    if fig == 0:  
+        if ran_val == 1:       
+            PAWNS2[fig_index] = num  
+        else:
+            PAWNS[fig_index] = num               
     elif fig == 1:
-        TOWERS[fig_index] = num
+        if ran_val == 1:       
+            TOWERS2[fig_index] = num  
+        else:
+            TOWERS[fig_index] = num  
     elif fig == 2:
-        HORSES[fig_index] = num
+        if ran_val == 1:       
+            HORSES2[fig_index] = num  
+        else:
+            HORSES[fig_index] = num  
     elif fig == 3:
-        BISHOPS[fig_index] = num          
+        if ran_val == 1:       
+            BISHOPS2[fig_index] = num  
+        else:
+            BISHOPS[fig_index] = num          
     elif fig == 4:
-        ROYALS[0] = num
+        if ran_val == 1:       
+            ROYALS2[0] = num  
+        else:
+            ROYALS[0] = num 
     elif fig == 5:
-        ROYALS[1] = num          
+        if ran_val == 1:       
+            ROYALS2[1] = num  
+        else:
+            ROYALS[1] = num           
     else: 
         print("Failll")
+    return main_player
 
-def pawn_movement(cor):        
-    
+def pawn_movement(cor):
     pos = str(cor)[2:4]
-    p_index_as_board = board_out.index([pos])
-    index_in_pawns = PAWNS.index([pos])
+    print(pos)
+    p_index_as_board = board_out.index([pos])    
     #Check for enemy
-    x = ord(pos[0]) - 1
-    y = ord(pos[0]) + 1
-    h_l_1 = chr(y) + str(int(pos[1]) + 1)
-    h_l_2 = chr(x) + str(int(pos[1]) + 1)
+    
+
+    if CURRENT_ROUND % 2 == 1:
+        xyz = -1
+    else:
+        xyz = 1
+    x = ord(pos[0]) - 1 
+    y = ord(pos[0]) + 1  
+    h_l_1 = chr(y) + str(int(pos[1]) + 1 * xyz)
+    h_l_2 = chr(x) + str(int(pos[1]) + 1 * xyz)
     next_pos = []
 
     #Positions for attackable enemy figures
@@ -166,7 +205,6 @@ def pawn_movement(cor):
         help_i = [[]]
         help_i[0] = i + "x"
         if help_i in board_out:
-            print("Possible attack move! ")
             attackable.append(help_i)
         else:
             help_list.remove(i)
@@ -175,21 +213,19 @@ def pawn_movement(cor):
     
     #Check for possible move
     front = [[]]
-    front[0] = pos[0] + str(int(pos[1])+1)
+    front[0] = pos[0] + str(int(pos[1])+1*xyz)
     if front in board_out:
         x = 1
-        print("Position up is occupied")
     else:
         x = 2
-        print("Position up is not occupied")
         front = str(front)
         front = front[2] + front[3]        
         next_pos.append(front)
 
     #Check for double    
     front = [[]] 
-    if pos[1] == "2":
-        front2 = pos[0] + str(int(pos[1]) + 2)
+    if pos[1] == "2" or pos[1] == "7":
+        front2 = pos[0] + str(int(pos[1]) + 2*xyz)
         front[0] = front2
         if front in board_out:
             print(f"{front2} is currenctly occupied")
@@ -197,26 +233,24 @@ def pawn_movement(cor):
             next_pos.append(front2)
     
     choice = choose_a_choice(next_pos, attackable, [pos])   
-
-    return choice, p_index_as_board, index_in_pawns 
+    
+    return choice, p_index_as_board 
 
 def tower_movement(cor):
     #choose which tower
-    tower_str = str(cor)[2:4]      
-    index_of_tows = TOWERS.index([tower_str])
+    tower_str = str(cor)[2:4]    
+    print(tower_str)
     index_of_tow = board_out.index([tower_str])
 
     next_pos, attackable = straight_movement(tower_str)
 
     #Choose which one  
     choice = choose_a_choice(next_pos, attackable, [tower_str])
-    return choice, index_of_tow, index_of_tows
+    return choice, index_of_tow
         
-def horse_movement(cor):
-    
+def horse_movement(cor):    
     horse_str = str(cor)[2:4]
     index_of_horse = board_out.index([horse_str])
-    index_of_horses = HORSES.index([horse_str])
     
     #Possible movement
     x = chr(ord(horse_str[0]) - 2)
@@ -235,14 +269,24 @@ def horse_movement(cor):
         st_list_copy = st_list[:]
         for y in st_list_copy:
             if len(y) > 2:
-                st_list.remove(y)        
+                st_list.remove(y)   
+            
         for y in st_list:
-            if y[0] in "abcdefgh" and 0 < int(y[1]) < 9 and len(y) == 2:
+            if y[0] in "abcdefgh" and 0 < int(y[1]) < 9 and len(y) == 2:                
                 board_indx_for_attack = COLS.index(y[0]) + ((8 - int(y[1])) * 8)
-                if len(board_out[board_indx_for_attack]) == 3:
-                    attackable.append(y)
-                else:
+                if board_out[board_indx_for_attack] == ["__"]:
                     pos_list.append(y)
+                else:
+                    for iii in enemy_player:
+                        for yyy in iii:
+                            if [y] == yyy:
+                                attackable.append(y)
+    
+    print(attackable) 
+    if len(attackable) > 0:
+        for i in pos_list:  
+            if [i] in attackable:
+                attackable.remove([i])
     
     #check if valid
     help_list2 = pos_list[:]
@@ -255,24 +299,22 @@ def horse_movement(cor):
     #Choosing fig to move
     choice = choose_a_choice(pos_list, attackable, [horse_str])
     
-    return choice, index_of_horse, index_of_horses
+    return choice, index_of_horse
 
 def bishop_movement(cor):
     bish_to_move = str(cor)[2:4]
     bish_index_in_board = board_out.index([bish_to_move])
-    index_in_bishops = BISHOPS.index([bish_to_move])
     #Check for valid move  
     pos_list, attackable = diagonal_movement(bish_to_move)
     
     #Choose next pos
     choice = choose_a_choice(pos_list, attackable, [bish_to_move])
 
-    return choice, bish_index_in_board, index_in_bishops
+    return choice, bish_index_in_board, 
 
 def queen_movement(cor):
     queen_as_str = str(cor)[2:4]
     q_index_as_board = board_out.index([queen_as_str])
-    index_in_queens = 0
 
     first_list, fourth_list = diagonal_movement(queen_as_str)
     second_list, third_list = straight_movement(queen_as_str)   
@@ -285,7 +327,7 @@ def queen_movement(cor):
     
     #Transformation    
     pos_list = choice
-    return pos_list, q_index_as_board, index_in_queens 
+    return pos_list, q_index_as_board, 
 
 def king_movement(cor):
     king_as_str = str(cor)[2:4]
@@ -314,7 +356,7 @@ def king_movement(cor):
                 moveable.append(i)
     choice = choose_a_choice(moveable, attackable, [king_as_str])
     
-    return choice, king_index_in_board, 1
+    return choice, king_index_in_board
 
 def check_if_chess(current_round):   
     round = current_round    
@@ -383,6 +425,7 @@ def choose_a_choice(move, attack, cur_pos):
     movee = move[:] + cur_pos
     attackk = attack[:]
     xx = 0
+    
     while True:
         if xx == 1:
             break
@@ -402,13 +445,19 @@ def choose_a_choice(move, attack, cur_pos):
             choosen_list = attackk[:] + movee[:]
             print(f"Attack: {attackk}, move: {movee}")
         xx = 0
-        while True:
+        for i in range(len(choosen_list)-1):
+                h_str = str(choosen_list[i])
+                xxx = COLS.index(h_str[0])*100
+                yyy = (8- int(h_str[1])) * 100
+                pygame.draw.rect(win,YELLOW, (xxx, yyy, 100, 100))
+                pygame.display.flip()
+        while True:            
             if xx == 1:
-                break
+                break            
             for event in pygame.event.get():                
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    __, choice = get_clicked_coords(pos)                    
+                    __, choice, __ = get_clicked_coords(pos, main_player)                    
                     timed_choice = str(choice)[2:4]
                     if timed_choice in choosen_list:
                         print(f"You have choosen --> {choice} <--")
@@ -418,16 +467,14 @@ def choose_a_choice(move, attack, cur_pos):
                         print("Unable to move")    
     
     for z in range(len(attackk)):
-        print(z, choice)
         if choice == [attackk[z]]:
-            print("point 1||||")
             for i in enemy_player:
                 for y in i:
                     if choice == y:
-                        print("point 2||||")
                         i.remove(choice)
-                        print(PAWNS2)
                         xx = 1
+    if choice == cur_pos:
+        choice = -1
     return choice
 
 def diagonal_movement(fig_pos):
@@ -467,44 +514,62 @@ def diagonal_movement(fig_pos):
                 break
     return next_pos, attackable
 
-def current_player(round):    
-    current_round = round
-    main_player = all_figs_in[:]
-    enemy_player = sec_team_all_figs[:]
-    
-    """ if current_round % 2 == 1:
+def current_player(round):  
+    print(round)  
+    current_round = int(round)
+    main_player = []
+    enemy_player = []
+    if current_round % 2 == 1:
         main_player = all_figs_in[:]
-        enemy_player = sec_team_all_figs[:]
+        enemy_player = sec_team_all_figs[:]        
     else:
-        main_player = sec_team_all_figs[:] 
-        enemy_player = all_figs_in[:] """
+        main_player = sec_team_all_figs[:]
+        enemy_player = all_figs_in[:]
     return main_player, enemy_player
 
 board_out = creation_of_field() 
 
 #Initialisation
-def game_init(figg, cor):
-    fig = figg       
-    coor = cor 
-    if fig == 0:                      
-        pos_list, old_index, fig_index = pawn_movement(coor)   
+def game_init(figg, cor, c_r):
+    fig = figg     
+    coor = cor   
+    CURRENT_ROUND  = c_r
+    if CURRENT_ROUND % 2 == 1:
+        print("Player 1")
+    else:
+        print("Player 2")
+        
+    if fig == 0:  
+        fig_index = main_player[0].index(coor)                   
+        pos_list, old_index = pawn_movement(coor)
     elif fig == 1:
-        pos_list, old_index, fig_index = tower_movement(coor)
+        fig_index = main_player[1].index(coor)  
+        pos_list, old_index  = tower_movement(coor)
     elif fig == 2:
-        pos_list, old_index, fig_index = horse_movement(coor)
+        fig_index = main_player[2].index(coor)  
+        pos_list, old_index = horse_movement(coor)
     elif fig == 3:
-        pos_list, old_index, fig_index = bishop_movement(coor)
+        fig_index = main_player[3].index(coor)  
+        pos_list, old_index  = bishop_movement(coor)
     elif fig == 4:
-        pos_list, old_index, fig_index = queen_movement(coor)
+        fig_index = 0
+        pos_list, old_index  = queen_movement(coor)
     elif fig == 5:
-        pos_list, old_index, fig_index = king_movement(coor)
+        fig_index = 1
+        pos_list, old_index  = king_movement(coor)
     else:
         print("Either wrong input or E")
-    figure_movement(fig, pos_list, old_index, fig_index)  
-
+    if pos_list != -1:        
+        figure_movement(fig, pos_list, old_index, fig_index,  CURRENT_ROUND) 
+    
+        
+    else:        
+        return pos_list
+    
 def paint_figures(figures, pic):
         img = pic
-        giv_list = figures
+        giv_list = []
+        giv_list = figures[:]
         
         for i in giv_list:
             i_str = str(i)
@@ -513,30 +578,40 @@ def paint_figures(figures, pic):
             
             win.blit(img, (position_x, position_y)) #1. do prava, 2. dole
             
-
-cur_round_val = 0
 if __name__ == "__main__":
-    cur_round_val += 1
     
     running = True
     pos = None
     strng = None  
-    (current_board(board_out))
-    main_player, enemy_player = current_player(cur_round_val)
-    check_if_chess(cur_round_val)
-    while running:
+    #(current_board(board_out))
+    main_player, enemy_player = current_player(CURRENT_ROUND)
+    while running:        
+        check_if_chess(CURRENT_ROUND)
         R_Q = ROYALS[0] + ROYALS2[0]
-        R_K = ROYALS[1] + ROYALS2[1]
+        R_K = ROYALS[-1] + ROYALS2[-1]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:                                                                                          
                 pos = pygame.mouse.get_pos()
-                fig, coor = get_clicked_coords(pos)
-                game_init(fig, coor)
-                (current_board(board_out))
+                fig, coor, cor_val = get_clicked_coords(pos, main_player) 
+                if cor_val == True:
+                    CURRENT_ROUND += 1                    
+                    xy = COLS.index(str(coor)[2]) * 100 
+                    yy = ((8 - int(str(coor)[3]))) * 100  
+                    pygame.draw.rect(win,GREEN, (xy,yy,10,100))
+                    pygame.draw.rect(win,GREEN, (xy,yy,100,10))
+                    pygame.display.update()
+                    ccr = game_init(fig, coor, CURRENT_ROUND)    
+                                    
+                    if ccr == -1:
+                        CURRENT_ROUND -= 1
+                    main_player, enemy_player = current_player(CURRENT_ROUND)
+                
+
+                #(current_board(board_out))                
                 pos = None
-        #print rectangles of color
+        #prinnt rectangles of color
         help_var = 0
         for rows in range(8):
             help_var += 1
@@ -548,9 +623,9 @@ if __name__ == "__main__":
                     color = WHITE
                 pygame.draw.rect(win,color, (0+100*cols,0+100*rows,100,100))
         
-        
-        for i in (all_figs_in + sec_team_all_figs):        
-            if i == PAWNS or i == PAWNS2:
+        for i in (main_player + enemy_player):        
+                
+            if i == PAWNS[:] or i == PAWNS2[:]:
                 pic = pawn
             elif i == TOWERS or i == TOWERS2:
                 pic = tower 
@@ -572,9 +647,6 @@ if __name__ == "__main__":
                     
             if i != ROYALS and i != ROYALS2:                           
                 paint_figures(i, pic)
-
-        if pos != None:
-            strng = get_clicked_coords(pos)
 
         pygame.display.flip()
         clock.tick(60)
