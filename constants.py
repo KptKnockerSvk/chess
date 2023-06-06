@@ -5,10 +5,11 @@ BLACK = (90,89,84)
 WHITE = (255,255,255)
 YELLOW = (243,155,6)
 GREEN = (62,200,0)
+RED = (146,27,53)
 
-WIDTH = 600
-HEIGHT = 600
-CURRENT_ROUND = 0
+WIDTH = 1080
+HEIGHT = 800
+CURRENT_ROUND = 1
 
 COLS = ["a", "b", "c", "d","e", "f", "g", "h"]
 PAWNS = [["a2"], ["b2"], ["c2"], ["d2"], ["e2"], ["f2"], ["g2"], ["h2"]]
@@ -33,3 +34,12 @@ horse = pygame.image.load("images\horse.png")
 king = pygame.image.load("images\king.png")
 queen = pygame.image.load("images\queen.png")
 tower = pygame.image.load("images\ower.png")
+
+pawn2 = pygame.image.load("images\mordor_soldier.png")
+bishop2 = pygame.image.load("images\mordor_bishop.png")
+horse2 = pygame.image.load("images\mordor_horse.png")
+king2 = pygame.image.load("images\mordor_king.png")
+queen2 = pygame.image.load("images\mordor_queen.png")
+tower2 = pygame.image.load("images\mordor_tower.png")
+
+
