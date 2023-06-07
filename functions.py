@@ -169,7 +169,6 @@ def figure_movement(choice, numm, indx, fg_indx, cr):
             ROYALS[-1] = num           
     else: 
         print("Failll")
-    print(ROYALS, ROYALS2,"|||||||||||||")
 
 def pawn_movement(cor):
     pos = str(cor)[2:4]
