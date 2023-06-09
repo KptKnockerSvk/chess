@@ -2,6 +2,7 @@ import pygame
 from constants import *
 import time
 import random
+import sys
 
 #SCREEN INIT
 pygame.init()
@@ -629,6 +630,7 @@ if __name__ == "__main__":
     running = True
     pos = None
     strng = None  
+    time.sleep(10)
     #
     main_player, enemy_player = current_player(CURRENT_ROUND)
     pygame.draw.rect(win,GREEN, (850,100,100,100))
@@ -639,6 +641,8 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                pygame.quit
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:  
                 pygame.draw.rect(win,(0,0,0), (850,600,100,100))
                 pygame.draw.rect(win,GREEN, (850,100,100,100))
@@ -741,8 +745,6 @@ if __name__ == "__main__":
             pygame.draw.rect(win,GREEN, (850,100,100,100))
             pygame.display.update()
         
-
-        pygame.quit
 
 
     
