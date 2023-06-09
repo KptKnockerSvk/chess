@@ -16,75 +16,56 @@ clock = pygame.time.Clock()
 def get_clicked_coords(poss, m_p):
     main_player, pos = m_p[:], poss
     indx = -1
-    if pos != None:    
-        if 0 < pos[0] < 800:   
-            if 0 < pos[0] < 100:
-                first = "a"
-            elif pos[0] < 200:
-                first = "b"
-            elif pos[0] < 300:
-                first = "c"
-            elif pos[0] < 400:
-                first = "d"
-            elif pos[0] < 500:
-                first = "e"
-            elif pos[0] < 600:
-                first = "f"
-            elif pos[0] < 700:
-                first = "g"
-            elif pos[0] < 800:
-                first = "h"
+    strng = ""
+    for i in range(2):
+        from_pos = str(pos[i])
+        len_from_pos = len(from_pos)
+        if len_from_pos == 3 and i == 0:
+            indicator = (97 * (1-i)) + int(from_pos[0])
+            strng += chr(indicator)
+        elif i == 1 and len_from_pos == 3:
+            strng += chr(56 - int(from_pos[0]))
+        else:
+            if i == 0:
+                strng += "a"
+            elif i == 1:
+                strng += "1"
             else:
-                first = "N"
+                strng = "N"
 
-        if 0 < pos[1] < 800:
-            if 0 < pos[1] < 100:
-                sec = "8"
-            elif pos[1] < 200:
-                sec = "7"
-            elif pos[1] < 300:
-                sec = "6"
-            elif pos[1] < 400:
-                sec = "5"
-            elif pos[1] < 500:
-                sec = "4"
-            elif pos[1] < 600:
-                sec = "3"
-            elif pos[1] < 700:
-                sec = "2"
-            elif pos[1] < 800:
-                sec = "1"
-            else:
-                sec = "N"
-        strng = first + sec
-        indx = -1
+
+            
+
+            
+
+    indx = -1
+            
+    dic_for_fig = {
+        0: PAWNS,
+        1: TOWERS,
+        2: HORSES,
+        3: BISHOPS,
+        4: ROYALS}
         
-        dic_for_fig = {
-            0: PAWNS,
-            1: TOWERS,
-            2: HORSES,
-            3: BISHOPS,
-            4: ROYALS}
-        
-        z = [strng]
-        end = 0
-        for i in main_player:            
-            if end == 1:
-                break
-            indx += 1
-            for y in i:
-                if z == y:
-                    end = 1
-                    if indx == 4 and z == main_player[4][-1]:
-                        indx = 5
-                    break 
-        for iy in main_player:
-            for yyi in iy:
-                if z == yyi:
-                    cor_val = True
-                    return indx, z, cor_val
-        cor_val = False
-        return indx, z, cor_val
+    z = [strng]
+    end = 0
+    for i in main_player:            
+        if end == 1:
+            break
+        indx += 1
+        for y in i:
+            if z == y:
+                end = 1
+                if indx == 4 and z == main_player[4][-1]:
+                    indx = 5
+                break 
+    for iy in main_player:
+        for yyi in iy:
+            if z == yyi:
+                cor_val = True
+                return indx, z, cor_val
+    cor_val = False
+    return indx, z, cor_val
     
 def creation_of_field():
     board_in = [["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
@@ -362,8 +343,6 @@ def king_movement(cor):
 def check_if_chess(current_round):   
     round = current_round    
     list_of_spaces = [9,8,7,1,-1,-7,-8,-9]
-    
-    print("||||",main_player[4], CURRENT_ROUND)
     x = str(main_player[4][-1])[2:4]
     if round % 2 == 1:           
         pawns_to_check = PAWNS2[:]
@@ -630,7 +609,6 @@ if __name__ == "__main__":
     running = True
     pos = None
     strng = None  
-    time.sleep(10)
     #
     main_player, enemy_player = current_player(CURRENT_ROUND)
     pygame.draw.rect(win,GREEN, (850,100,100,100))
@@ -665,8 +643,7 @@ if __name__ == "__main__":
                     pygame.display.update()
 
                     
-                     
-        print(current_board(board_out))                    
+                                      
                 
         #prinnt rectangles of color
         help_var = 0
