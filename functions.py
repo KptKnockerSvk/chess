@@ -1,8 +1,8 @@
-import pygame 
 from constants import *
 import time
 import random
 import sys
+import pygame
 
 #SCREEN INIT
 pygame.init()
@@ -29,12 +29,9 @@ def get_clicked_coords(poss, m_p):
             if i == 0:
                 strng += "a"
             elif i == 1:
-                strng += "1"
+                strng += "8"
             else:
                 strng = "N"
-
-
-            
 
             
 
@@ -46,26 +43,25 @@ def get_clicked_coords(poss, m_p):
         2: HORSES,
         3: BISHOPS,
         4: ROYALS}
-        
-    z = [strng]
+    strng = [strng]
     end = 0
     for i in main_player:            
         if end == 1:
             break
         indx += 1
         for y in i:
-            if z == y:
+            if strng == y:
                 end = 1
-                if indx == 4 and z == main_player[4][-1]:
+                if indx == 4 and strng == main_player[4][-1]:
                     indx = 5
                 break 
     for iy in main_player:
         for yyi in iy:
-            if z == yyi:
+            if strng == yyi:
                 cor_val = True
-                return indx, z, cor_val
+                return indx, strng, cor_val
     cor_val = False
-    return indx, z, cor_val
+    return indx, strng, cor_val
     
 def creation_of_field():
     board_in = [["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"], ["__"],    # 0
@@ -627,6 +623,7 @@ if __name__ == "__main__":
                 pygame.display.update()                                                                                 
                 pos = pygame.mouse.get_pos() 
                 fig, coor, cor_val = get_clicked_coords(pos, main_player) 
+                print(fig, coor, cor_val)
                 xy = COLS.index(str(coor)[2]) * 100 
                 yy = ((8 - int(str(coor)[3]))) * 100  
                 pygame.draw.rect(win,GREEN, (xy,yy,10,100))
